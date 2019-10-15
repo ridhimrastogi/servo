@@ -109,7 +109,7 @@ use crate::stylesheet_set::StylesheetSetRef;
 use crate::task::TaskBox;
 use crate::task_source::{TaskSource, TaskSourceName};
 use crate::timers::OneshotTimerCallback;
-use canvas_traits::webgl::{self, WebGLContextId, WebGLMsg};
+use canvas_traits::webgl::{self, SwapChainId, WebGLContextId, WebGLMsg};
 use content_security_policy::{self as csp, CspList};
 use cookie::Cookie;
 use devtools_traits::ScriptToDevtoolsControlMsg;
@@ -2506,10 +2506,13 @@ impl Document {
     }
 
     pub fn flush_dirty_canvases(&self) {
-        let dirty_context_ids: Vec<_> = self.dirty_webgl_contexts.borrow_mut().drain().collect();
-        if dirty_context_ids.is_empty() {
-            return;
-        }
+        let dirty_context_ids: Vec<_> = self
+            .dirty_webgl_contexts
+            .borrow_mut()
+            .drain()
+            .map(SwapChainId::Context)
+            .collect();
+
         let (sender, receiver) = webgl::webgl_channel().unwrap();
         self.window
             .webgl_chan()
