@@ -110,7 +110,6 @@ use servo_config::{pref, prefs};
 use servo_media::player::context::GlContext;
 use servo_media::ServoMedia;
 use std::borrow::Cow;
-use std::cell::RefCell;
 use std::cmp::max;
 use std::path::PathBuf;
 use std::rc::Rc;
@@ -1025,8 +1024,8 @@ where
         image_handler,
         output_handler,
     } = WebGLComm::new(
-        Rc::new(device),
-        Rc::new(RefCell::new(context)),
+        device,
+        context,
         window.gl(),
         webrender_api_sender,
         webvr_compositor.map(|compositor| compositor as Box<_>),
