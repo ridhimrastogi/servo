@@ -122,7 +122,7 @@ pub(crate) struct WebGLThread {
     webrender_swap_chains: SwapChains<WebGLContextId>,
     /// The swap chains used by webxr
     webxr_swap_chains: SwapChains<WebXRSwapChainId>,
-    ///
+    /// Whether this context is a GL or GLES context.
     api_type: gl::GlType,
 }
 
