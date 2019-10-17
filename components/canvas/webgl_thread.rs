@@ -108,6 +108,8 @@ pub(crate) struct WebGLThread {
     /// Current bound context.
     bound_context_id: Option<WebGLContextId>,
     /// Handler user to send WebVR commands.
+    // TODO: replace webvr implementation with one built on top of webxr
+    #[allow(dead_code)]
     webvr_compositor: Option<Box<dyn WebVRRenderHandler>>,
     /// Texture ids and sizes used in DOM to texture outputs.
     dom_outputs: FnvHashMap<webrender_api::PipelineId, DOMToTextureData>,
