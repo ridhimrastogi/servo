@@ -1010,8 +1010,15 @@ where
     // FIXME(pcwalton): The `NoopContextReleaser` is an unsafe hack to get around the fact that
     // Glutin doesn't provide an obvious way to reference count windows.
     window.make_gl_context_current();
-    let (device, context) =
-        unsafe { Device::from_current_context().expect("Failed to create graphics context!") };
+    let (device, context) = unsafe {
+        if opts::get().headless {
+            Device::from_current_software_context()
+                .expect("Failed to create software graphics context!")
+        } else {
+            Device::from_current_hardware_context()
+                .expect("Failed to create hardware graphics context!")
+        }
+    };
 
     let gl_type = match window.gl().get_type() {
         gleam::gl::GlType::Gl => sparkle::gl::GlType::Gl,
