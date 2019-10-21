@@ -1822,7 +1822,9 @@ impl WebGLImpl {
     // array object functions, but support a set of APPLE extension functions that
     // provide VAO support instead.
     fn needs_apple_vertex_arrays(device: &Device, ctx: &Context) -> bool {
-        cfg!(target_os = "macos") && !opts::get().headless && Self::gl_version(device, ctx).major < 3
+        cfg!(target_os = "macos") &&
+            !opts::get().headless &&
+            Self::gl_version(device, ctx).major < 3
     }
 
     fn gl_version(device: &Device, ctx: &Context) -> GLVersion {
