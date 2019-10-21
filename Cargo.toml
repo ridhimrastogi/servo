@@ -39,4 +39,4 @@ webxr = { git = "https://github.com/asajeffrey/webxr", branch = "surfman" }
 webxr-api = { git = "https://github.com/asajeffrey/webxr", branch = "surfman" }
 
 [patch."https://github.com/pcwalton/surfman"]
-surfman = { git = "https://github.com/asajeffrey/surfman", branch = "redo-features" }
+surfman = { git = "https://github.com/asajeffrey/surfman", branch = "servo" }
