@@ -505,6 +505,17 @@ impl WebGLThread {
         let framebuffer_rebinding_info =
             FramebufferRebindingInfo::detect(&self.device, &data.ctx, &*data.gl);
 
+        // Clamp the size
+        let mut max_size = [0, 0];
+        #[allow(unsafe_code)]
+        unsafe {
+            data.gl.get_integer_v(gl::MAX_VIEWPORT_DIMS, &mut max_size)
+        };
+        let size = Size2D::new(
+            size.width.min(max_size[0] as u32),
+            size.height.min(max_size[1] as u32),
+        );
+
         // Resize the swap chains
         if let Some(swap_chain) = self.webrender_swap_chains.get(context_id) {
             swap_chain
