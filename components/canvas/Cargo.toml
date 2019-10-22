@@ -38,5 +38,6 @@ webrender = {git = "https://github.com/servo/webrender"}
 webrender_api = {git = "https://github.com/servo/webrender", features = ["ipc"]}
 webrender_traits = {path = "../webrender_traits"}
 webxr-api = {git = "https://github.com/servo/webxr", features = ["ipc"]}
-surfman = { git = "https://github.com/pcwalton/surfman" }
+# NOTE: the sm-angle feature only enables angle on windows, not other platforms!
+surfman = { git = "https://github.com/pcwalton/surfman", features = ["sm-angle"] }
 surfman-chains =  { git = "https://github.com/asajeffrey/surfman-chains" }
