@@ -3482,6 +3482,7 @@ impl WebGLRenderingContextMethods for WebGLRenderingContext {
 
         if program.is_deleted() ||
             !program.is_linked() ||
+            self.context_id() != location.context_id() ||
             program.id() != location.program_id() ||
             program.link_generation() != location.link_generation()
         {
