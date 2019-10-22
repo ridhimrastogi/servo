@@ -3475,8 +3475,8 @@ checksum = "a86ed3f5f244b372d6b1a00b72ef7f8876d0bc6a78a4c9985c53614041512063"
 
 [[package]]
 name = "osmesa-src"
-version = "0.1.0"
-source = "git+https://github.com/servo/osmesa-src#97f4613fd80eee153ab134dfe349777bc5a27bab"
+version = "0.1.1"
+source = "git+https://github.com/asajeffrey/osmesa-src?branch=servo#3f2f932a2f7cc659c223eec8982d8ce51b7473ce"
 
 [[package]]
 name = "osmesa-sys"
