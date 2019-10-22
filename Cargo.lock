@@ -431,6 +431,7 @@ name = "canvas"
 version = "0.0.1"
 dependencies = [
  "azure",
+ "bitflags",
  "byteorder",
  "canvas_traits",
  "cssparser",
@@ -442,11 +443,12 @@ dependencies = [
  "ipc-channel",
  "log",
  "num-traits",
- "offscreen_gl_context",
  "pixels",
  "raqote",
  "servo_config",
  "sparkle",
+ "surfman",
+ "surfman-chains",
  "webrender",
  "webrender_api",
  "webrender_traits",
@@ -470,6 +472,7 @@ dependencies = [
  "sparkle",
  "webrender_api",
  "webvr_traits",
+ "webxr-api",
 ]
 
 [[package]]
@@ -542,11 +545,10 @@ dependencies = [
 
 [[package]]
 name = "cgl"
-version = "0.3.0"
+version = "0.3.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e24cd014051545194d6e879b37d33eed1fcf4bf41e1f54644530c63d8cb912f5"
+checksum = "0ced0551234e87afee12411d535648dd89d2e7f34c78b753395567aff3d447ff"
 dependencies = [
- "gleam 0.7.0",
  "libc",
 ]
 
@@ -632,6 +634,21 @@ name = "cocoa"
 version = "0.18.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "cf79daa4e11e5def06e55306aa3601b87de6b5149671529318da048f67cdd77b"
+dependencies = [
+ "bitflags",
+ "block",
+ "core-foundation",
+ "core-graphics",
+ "foreign-types",
+ "libc",
+ "objc",
+]
+
+[[package]]
+name = "cocoa"
+version = "0.19.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f29f7768b2d1be17b96158e3285951d366b40211320fb30826a76cb7a0da6400"
 dependencies = [
  "bitflags",
  "block",
@@ -1096,6 +1113,18 @@ checksum = "37a76dd8b997af7107d0bb69d43903cf37153a18266f8b3fdb9911f28efb5444"
 dependencies = [
  "libc",
  "winapi",
+]
+
+[[package]]
+name = "display-link"
+version = "0.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "303de632386f9c82eb7823456f5932bd40b4de9521078901767bf16a9f331491"
+dependencies = [
+ "foreign-types",
+ "objc",
+ "objc-foundation",
+ "time-point",
 ]
 
 [[package]]
@@ -1632,7 +1661,7 @@ checksum = "938ce7a2b1bbfe1535166133bea3f9c1b46350d2794b49561303575e9e1b9949"
 dependencies = [
  "android_glue",
  "cgl 0.2.3",
- "cocoa",
+ "cocoa 0.18.4",
  "core-foundation",
  "core-graphics",
  "derivative",
@@ -2304,7 +2333,7 @@ version = "0.12.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "2279a6faecd06034f88218f77f7a767693e0957bce0323a96d92747e2760b445"
 dependencies = [
- "cgl 0.3.0",
+ "cgl 0.3.2",
  "core-foundation",
  "gleam 0.7.0",
  "leaky-cow",
@@ -2716,7 +2745,6 @@ dependencies = [
  "msg",
  "net",
  "net_traits",
- "offscreen_gl_context",
  "profile",
  "profile_traits",
  "script",
@@ -2731,6 +2759,7 @@ dependencies = [
  "sparkle",
  "style",
  "style_traits",
+ "surfman",
  "webdriver_server",
  "webrender",
  "webrender_api",
@@ -3380,27 +3409,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e4730aa1c64d722db45f7ccc4113a3e2c465d018de6db4d3e7dfe031e8c8a297"
 dependencies = [
  "objc",
-]
-
-[[package]]
-name = "offscreen_gl_context"
-version = "0.25.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8f4df25a3f141e0f7c6e52d4e142879d5cea9b4f7ff2f975d0b9bbac8c60f46b"
-dependencies = [
- "cgl 0.3.0",
- "core-foundation",
- "euclid",
- "gl_generator 0.13.1",
- "lazy_static",
- "libloading",
- "log",
- "objc",
- "osmesa-sys",
- "serde",
- "sparkle",
- "winapi",
- "x11",
 ]
 
 [[package]]
@@ -4624,7 +4632,7 @@ version = "0.30000023.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "3cf31d622cdfc24317eb1caa1018294f8058eb8315c9ed79103487b9504ddadb"
 dependencies = [
- "cgl 0.3.0",
+ "cgl 0.3.2",
  "cmake",
  "euclid",
  "expat-sys",
@@ -5103,6 +5111,43 @@ dependencies = [
 ]
 
 [[package]]
+name = "surfman"
+version = "0.23.0"
+source = "git+https://github.com/asajeffrey/surfman?branch=servo#00c00bf69fade9ea60f68d0eb913b1a1b0807f51"
+dependencies = [
+ "bitflags",
+ "cgl 0.3.2",
+ "cocoa 0.19.1",
+ "core-foundation",
+ "core-graphics",
+ "display-link",
+ "euclid",
+ "gl_generator 0.11.0",
+ "io-surface",
+ "lazy_static",
+ "libc",
+ "log",
+ "objc",
+ "osmesa-sys",
+ "winapi",
+ "winit",
+ "wio",
+ "x11",
+]
+
+[[package]]
+name = "surfman-chains"
+version = "0.1.0"
+source = "git+https://github.com/asajeffrey/surfman-chains#d32b5108cb5dfec1c6914b331f0fde96d4d8b708"
+dependencies = [
+ "euclid",
+ "fnv",
+ "log",
+ "sparkle",
+ "surfman",
+]
+
+[[package]]
 name = "svg_fmt"
 version = "0.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -5277,6 +5322,12 @@ dependencies = [
  "redox_syscall",
  "winapi",
 ]
+
+[[package]]
+name = "time-point"
+version = "0.1.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "06535c958d6abe68dc4b4ef9e6845f758fc42fe463d0093d0aca40254f03fb14"
 
 [[package]]
 name = "tinyfiledialogs"
@@ -5976,7 +6027,7 @@ dependencies = [
 [[package]]
 name = "webxr"
 version = "0.0.1"
-source = "git+https://github.com/servo/webxr#61344bc5d92bc218458063baa7bc5d2d388aa7f5"
+source = "git+https://github.com/asajeffrey/webxr?branch=surfman#89e2b051b6901b9784782f6c58c7ac8bc48dfaa0"
 dependencies = [
  "bindgen",
  "euclid",
@@ -5986,6 +6037,7 @@ dependencies = [
  "log",
  "openxr",
  "serde",
+ "surfman",
  "webxr-api",
  "winapi",
  "wio",
@@ -5994,13 +6046,15 @@ dependencies = [
 [[package]]
 name = "webxr-api"
 version = "0.0.1"
-source = "git+https://github.com/servo/webxr#61344bc5d92bc218458063baa7bc5d2d388aa7f5"
+source = "git+https://github.com/asajeffrey/webxr?branch=surfman#89e2b051b6901b9784782f6c58c7ac8bc48dfaa0"
 dependencies = [
  "euclid",
- "gleam 0.6.18",
  "ipc-channel",
  "log",
  "serde",
+ "surfman",
+ "surfman-chains",
+ "winit",
 ]
 
 [[package]]
@@ -6059,7 +6113,7 @@ dependencies = [
  "android_glue",
  "backtrace",
  "bitflags",
- "cocoa",
+ "cocoa 0.18.4",
  "core-foundation",
  "core-graphics",
  "lazy_static",
