@@ -512,8 +512,8 @@ impl WebGLThread {
             data.gl.get_integer_v(gl::MAX_VIEWPORT_DIMS, &mut max_size)
         };
         let size = Size2D::new(
-            size.width.min(max_size[0] as u32),
-            size.height.min(max_size[1] as u32),
+            size.width.min(max_size[0] as u32).max(1),
+            size.height.min(max_size[1] as u32).max(1),
         );
 
         // Resize the swap chains
