@@ -179,6 +179,9 @@ thread_local! {
     static WEBGL_MAIN_THREAD: RefCell<Option<Rc<WebGLMainThread>>> = RefCell::new(None);
 }
 
+// A size at which it should be safe to create GL contexts
+const SAFE_VIEWPORT_DIMS: [u32; 2] = [1024, 1024];
+
 impl WebGLThread {
     /// Create a new instance of WebGLThread.
     pub(crate) fn new(
@@ -382,10 +385,10 @@ impl WebGLThread {
     fn create_webgl_context(
         &mut self,
         version: WebGLVersion,
-        size: Size2D<u32>,
+        requested_size: Size2D<u32>,
         attributes: GLContextAttributes,
     ) -> Result<(WebGLContextId, webgl::GLLimits), String> {
-        debug!("WebGLThread::create_webgl_context({:?})", size);
+        debug!("WebGLThread::create_webgl_context({:?})", requested_size);
 
         // Creating a new GLContext may make the current bound context_id dirty.
         // Clear it to ensure that  make_current() is called in subsequent commands.
@@ -401,8 +404,12 @@ impl WebGLThread {
             .create_context_descriptor(&context_attributes)
             .unwrap();
 
+        let safe_size = Size2D::new(
+            requested_size.width.min(SAFE_VIEWPORT_DIMS[0]).max(1),
+            requested_size.height.min(SAFE_VIEWPORT_DIMS[1]).max(1),
+        );
         let surface_type = SurfaceType::Generic {
-            size: size.to_i32(),
+            size: safe_size.to_i32(),
         };
 
         let mut ctx = self
@@ -426,6 +433,11 @@ impl WebGLThread {
             .create_attached_swap_chain(id, &mut self.device, &mut ctx)
             .expect("Failed to create the swap chain");
 
+        let swap_chain = self
+            .webrender_swap_chains
+            .get(id)
+            .expect("Failed to get the swap chain");
+
         debug!("Created webgl context {:?}/{:?}", id, ctx.id());
 
         let gl = match self.api_type {
@@ -438,6 +450,14 @@ impl WebGLThread {
         };
 
         let limits = GLLimits::detect(&*gl);
+
+        let size = clamp_viewport(&gl, requested_size);
+        if safe_size != size {
+            debug!("Resizing swap chain from {} to {}", safe_size, size);
+            swap_chain
+                .resize(&mut self.device, &mut ctx, size.to_i32())
+                .expect("Failed to resize swap chain");
+        }
 
         self.device.make_context_current(&ctx).unwrap();
         let framebuffer = self
@@ -494,7 +514,7 @@ impl WebGLThread {
     fn resize_webgl_context(
         &mut self,
         context_id: WebGLContextId,
-        size: Size2D<u32>,
+        requested_size: Size2D<u32>,
         sender: WebGLSender<Result<(), String>>,
     ) {
         let data = Self::make_current_if_needed_mut(
@@ -505,25 +525,12 @@ impl WebGLThread {
         )
         .expect("Missing WebGL context!");
 
+        let size = clamp_viewport(&data.gl, requested_size);
+
         // Check to see if any of the current framebuffer bindings are the surface we're about to
         // throw out. If so, we'll have to reset them after destroying the surface.
         let framebuffer_rebinding_info =
             FramebufferRebindingInfo::detect(&self.device, &data.ctx, &*data.gl);
-
-        // Clamp the size
-        let mut max_size = [i32::max_value(), i32::max_value()];
-        #[allow(unsafe_code)]
-        unsafe {
-            data.gl.get_integer_v(gl::MAX_VIEWPORT_DIMS, &mut max_size)
-        };
-        let size = Size2D::new(
-            size.width.min(max_size[0] as u32).max(1),
-            size.height.min(max_size[1] as u32).max(1),
-        );
-        debug!(
-            "Resizing context {:?} to {} (clamped to {:?})",
-            context_id, size, max_size
-        );
 
         // Resize the swap chains
         if let Some(swap_chain) = self.webrender_swap_chains.get(context_id) {
@@ -2459,6 +2466,20 @@ fn flip_pixels_y(
     }
 
     flipped
+}
+
+// Clamp a size to the current GL context's max viewport
+fn clamp_viewport(gl: &Gl, size: Size2D<u32>) -> Size2D<u32> {
+    let mut max_size = [i32::max_value(), i32::max_value()];
+    #[allow(unsafe_code)]
+    unsafe {
+        gl.get_integer_v(gl::MAX_VIEWPORT_DIMS, &mut max_size);
+        debug_assert_eq!(gl.get_error(), gl::NO_ERROR);
+    }
+    Size2D::new(
+        size.width.min(max_size[0] as u32).max(1),
+        size.height.min(max_size[1] as u32).max(1),
+    )
 }
 
 trait ToSurfmanVersion {
