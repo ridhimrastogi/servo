@@ -321,6 +321,10 @@ impl WebGLRenderingContext {
         self.webgl_sender.context_id()
     }
 
+    pub fn onscreen(&self) -> bool {
+        self.canvas.upcast::<Node>().is_connected()
+    }
+
     #[inline]
     pub fn send_command(&self, command: WebGLCommand) {
         self.webgl_sender
@@ -463,7 +467,7 @@ impl WebGLRenderingContext {
             .dirty(NodeDamage::OtherNodeDamage);
 
         let document = document_from_node(&*self.canvas);
-        document.add_dirty_canvas(self.context_id());
+        document.add_dirty_canvas(self);
     }
 
     fn vertex_attrib(&self, indx: u32, x: f32, y: f32, z: f32, w: f32) {
