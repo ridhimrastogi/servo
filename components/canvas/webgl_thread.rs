@@ -446,6 +446,11 @@ impl WebGLThread {
             .unwrap();
         gl.bind_framebuffer(gl::FRAMEBUFFER, framebuffer);
         gl.viewport(0, 0, size.width as i32, size.height as i32);
+        gl.scissor(0, 0, size.width as i32, size.height as i32);
+        gl.clear_color(0., 0., 0., 0.);
+        gl.clear_depth(1.);
+        gl.clear_stencil(0);
+        gl.clear(gl::COLOR_BUFFER_BIT | gl::DEPTH_BUFFER_BIT | gl::STENCIL_BUFFER_BIT);
 
         let descriptor = self.device.context_descriptor(&ctx);
         let has_alpha = self
@@ -506,7 +511,7 @@ impl WebGLThread {
             FramebufferRebindingInfo::detect(&self.device, &data.ctx, &*data.gl);
 
         // Clamp the size
-        let mut max_size = [0, 0];
+        let mut max_size = [i32::max_value(), i32::max_value()];
         #[allow(unsafe_code)]
         unsafe {
             data.gl.get_integer_v(gl::MAX_VIEWPORT_DIMS, &mut max_size)
@@ -515,12 +520,21 @@ impl WebGLThread {
             size.width.min(max_size[0] as u32).max(1),
             size.height.min(max_size[1] as u32).max(1),
         );
+        debug!(
+            "Resizing context {:?} to {} (clamped to {:?})",
+            context_id, size, max_size
+        );
 
         // Resize the swap chains
         if let Some(swap_chain) = self.webrender_swap_chains.get(context_id) {
             swap_chain
                 .resize(&mut self.device, &mut data.ctx, size.to_i32())
                 .expect("Failed to resize swap chain");
+            swap_chain
+                .clear_surface(&mut self.device, &mut data.ctx, &*data.gl)
+                .expect("Failed to clear resized swap chain");
+        } else {
+            error!("Failed to find swap chain");
         }
 
         // Reset framebuffer bindings as appropriate.
@@ -546,6 +560,8 @@ impl WebGLThread {
                 texture_target,
             );
         }
+
+        debug_assert_eq!(data.gl.get_error(), gl::NO_ERROR);
 
         sender.send(Ok(())).unwrap();
     }
