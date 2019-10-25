@@ -688,6 +688,7 @@ impl WebGLThread {
         self.webxr_swap_chains
             .create_detached_swap_chain(id, size, &mut self.device, &mut data.ctx)
             .ok()?;
+        debug!("Created swap chain {:?}", id);
         Some(id)
     }
 
