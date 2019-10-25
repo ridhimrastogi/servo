@@ -636,6 +636,7 @@ impl WebGLThread {
             let framebuffer_rebinding_info =
                 FramebufferRebindingInfo::detect(&self.device, &data.ctx, &*data.gl);
 
+            debug!("Getting swap chain for {:?}", swap_id);
             let swap_chain = match swap_id {
                 SwapChainId::Context(id) => self.webrender_swap_chains.get(id),
                 SwapChainId::Framebuffer(_, WebGLOpaqueFramebufferId::WebXR(id)) => {
@@ -644,16 +645,19 @@ impl WebGLThread {
             }
             .expect("Where's the swap chain?");
 
+            debug!("Swapping {:?}", swap_id);
             swap_chain
                 .swap_buffers(&mut self.device, &mut data.ctx)
                 .unwrap();
 
             // TODO: if preserveDrawingBuffer is true, then blit the front buffer to the back buffer
+            debug!("Clearing {:?}", swap_id);
             swap_chain
                 .clear_surface(&mut self.device, &mut data.ctx, &*data.gl)
                 .unwrap();
 
             // Rebind framebuffers as appropriate.
+            debug!("Rebinding {:?}", swap_id);
             framebuffer_rebinding_info.apply(&self.device, &data.ctx, &*data.gl);
 
             let framebuffer = self
