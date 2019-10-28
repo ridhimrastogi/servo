@@ -175,7 +175,7 @@ dependencies = [
  "lazy_static",
  "libc",
  "log",
- "mach 0.2.3",
+ "mach",
  "msg",
  "nix",
  "serde_json",
@@ -2857,15 +2857,6 @@ checksum = "c41e0c4fef86961ac6d6f8a82609f55f31b05e4fce149ac5710e439df7619ba4"
 
 [[package]]
 name = "mach"
-version = "0.2.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "86dd2487cdfea56def77b88438a2c915fb45113c5319bfe7e14306ca4cd0b0e1"
-dependencies = [
- "libc",
-]
-
-[[package]]
-name = "mach"
 version = "0.3.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b823e83b2affd8f40a9ee8c29dbc56404c1e34cd2710921f2801e2cf29527afa"
@@ -5136,7 +5127,7 @@ dependencies = [
  "lazy_static",
  "libc",
  "log",
- "mach 0.3.2",
+ "mach",
  "objc",
  "osmesa-sys",
  "winapi",
