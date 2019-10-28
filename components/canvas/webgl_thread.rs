@@ -86,6 +86,7 @@ pub struct GLState {
     stencil_clear_value: i32,
     depth_write_mask: bool,
     depth_clear_value: f64,
+    default_vao: gl::GLuint,
 }
 
 impl Default for GLState {
@@ -98,6 +99,7 @@ impl Default for GLState {
             stencil_clear_value: 0,
             depth_write_mask: true,
             depth_clear_value: 1.,
+            default_vao: 0,
         }
     }
 }
@@ -490,7 +492,25 @@ impl WebGLThread {
             .contains(ContextAttributeFlags::ALPHA);
         let texture_target = current_wr_texture_target(&self.device);
 
-        let state = Default::default();
+        let use_apple_vertex_array = WebGLImpl::needs_apple_vertex_arrays(&self.device, &ctx);
+        let default_vao = WebGLImpl::create_vertex_array(&gl, use_apple_vertex_array)
+            .expect("Failed to create VAO")
+            .get();
+        if use_apple_vertex_array {
+            match *gl {
+                Gl::Gl(ref gl) => unsafe {
+                    gl.BindVertexArrayAPPLE(default_vao);
+                },
+                Gl::Gles(_) => unimplemented!("No GLES on macOS"),
+            }
+        } else {
+            gl.bind_vertex_array(default_vao)
+        }
+
+        let state = GLState {
+            default_vao,
+            ..Default::default()
+        };
         self.contexts.insert(
             id,
             GLContextData {
@@ -516,6 +536,8 @@ impl WebGLThread {
                 received_webgl_command: false,
             },
         );
+
+        debug_assert_eq!(data.gl.get_error(), gl::NO_ERROR);
 
         Ok((id, limits))
     }
@@ -1370,7 +1392,7 @@ impl WebGLImpl {
             WebGLCommand::GenerateMipmap(target) => gl.generate_mipmap(target),
             WebGLCommand::CreateVertexArray(ref chan) => {
                 let use_apple_vertex_array = Self::needs_apple_vertex_arrays(device, ctx);
-                Self::create_vertex_array(gl, use_apple_vertex_array, chan)
+                let _ = chan.send(Self::create_vertex_array(gl, use_apple_vertex_array));
             },
             WebGLCommand::DeleteVertexArray(id) => {
                 let ids = [id.get()];
@@ -1387,7 +1409,7 @@ impl WebGLImpl {
                 }
             },
             WebGLCommand::BindVertexArray(id) => {
-                let id = id.map_or(0, WebGLVertexArrayId::get);
+                let id = id.map_or(state.default_vao, WebGLVertexArrayId::get);
                 let use_apple_vertex_array = Self::needs_apple_vertex_arrays(device, ctx);
                 if use_apple_vertex_array {
                     match gl {
@@ -2010,11 +2032,7 @@ impl WebGLImpl {
     }
 
     #[allow(unsafe_code)]
-    fn create_vertex_array(
-        gl: &Gl,
-        use_apple_ext: bool,
-        chan: &WebGLSender<Option<WebGLVertexArrayId>>,
-    ) {
+    fn create_vertex_array(gl: &Gl, use_apple_ext: bool) -> Option<WebGLVertexArrayId> {
         let vao = if use_apple_ext {
             match gl {
                 Gl::Gl(gl) => {
@@ -2029,12 +2047,11 @@ impl WebGLImpl {
         } else {
             gl.gen_vertex_arrays(1)[0]
         };
-        let vao = if vao == 0 {
+        if vao == 0 {
             None
         } else {
             Some(unsafe { WebGLVertexArrayId::new(vao) })
-        };
-        chan.send(vao).unwrap();
+        }
     }
 
     /// Updates the swap buffers if the context surface needs to be changed
