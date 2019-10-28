@@ -5113,7 +5113,7 @@ dependencies = [
 [[package]]
 name = "surfman"
 version = "0.23.0"
-source = "git+https://github.com/pcwalton/surfman#eef30a3ab57159725bf5edacbc097860329535d8"
+source = "git+https://github.com/pcwalton/surfman#87fc22091d7ce6f8481349172a00718d1f06038c"
 dependencies = [
  "bitflags",
  "cgl 0.3.2",
@@ -6028,7 +6028,7 @@ dependencies = [
 [[package]]
 name = "webxr"
 version = "0.0.1"
-source = "git+https://github.com/asajeffrey/webxr?branch=surfman#767830e7c4c79d4f494ff6ee8571b45410c965ec"
+source = "git+https://github.com/asajeffrey/webxr?branch=surfman#bf25daa4fe6b7a2e1f95dcc6c1958616a6d4a72b"
 dependencies = [
  "bindgen",
  "euclid",
@@ -6047,7 +6047,7 @@ dependencies = [
 [[package]]
 name = "webxr-api"
 version = "0.0.1"
-source = "git+https://github.com/asajeffrey/webxr?branch=surfman#767830e7c4c79d4f494ff6ee8571b45410c965ec"
+source = "git+https://github.com/asajeffrey/webxr?branch=surfman#bf25daa4fe6b7a2e1f95dcc6c1958616a6d4a72b"
 dependencies = [
  "euclid",
  "ipc-channel",
