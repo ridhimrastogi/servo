@@ -57,9 +57,16 @@ use std::cell::{Cell, RefCell};
 use std::rc::Rc;
 use std::sync::{Arc, Mutex};
 use std::thread;
+use surfman;
+use surfman::platform::generic::universal::adapter::Adapter;
+use surfman::platform::generic::universal::connection::Connection;
+use surfman::platform::generic::universal::context::Context;
+use surfman::platform::generic::universal::device::Device;
+use surfman::ContextAttributeFlags;
+use surfman::ContextAttributes;
 use surfman::GLVersion;
+use surfman::SurfaceAccess;
 use surfman::SurfaceType;
-use surfman::{self, Adapter, Context, ContextAttributeFlags, ContextAttributes, Device};
 use surfman_chains::SwapChains;
 use webrender_traits::{WebrenderExternalImageRegistry, WebrenderImageHandlerType};
 use webxr_api::SwapChainId as WebXRSwapChainId;
@@ -144,6 +151,7 @@ pub(crate) struct WebGLThreadInit {
     pub receiver: WebGLReceiver<WebGLMsg>,
     pub webrender_swap_chains: SwapChains<WebGLContextId>,
     pub webxr_swap_chains: SwapChains<WebXRSwapChainId>,
+    pub connection: Connection,
     pub adapter: Adapter,
     pub api_type: gl::GlType,
 }
@@ -193,12 +201,13 @@ impl WebGLThread {
             receiver,
             webrender_swap_chains,
             webxr_swap_chains,
+            connection,
             adapter,
             api_type,
         }: WebGLThreadInit,
     ) -> Self {
         WebGLThread {
-            device: Device::new(&adapter).expect("Couldn't open WebGL device!"),
+            device: Device::new(&connection, &adapter).expect("Couldn't open WebGL device!"),
             webrender_api: webrender_api_sender.create_api(),
             contexts: Default::default(),
             cached_context_info: Default::default(),
@@ -411,10 +420,11 @@ impl WebGLThread {
         let surface_type = SurfaceType::Generic {
             size: safe_size.to_i32(),
         };
+        let surface_access = self.surface_access();
 
         let mut ctx = self
             .device
-            .create_context(&context_descriptor, &surface_type)
+            .create_context(&context_descriptor, surface_access, &surface_type)
             .expect("Failed to create the GL context!");
         // https://github.com/pcwalton/surfman/issues/7
         self.device
@@ -430,7 +440,7 @@ impl WebGLThread {
         );
 
         self.webrender_swap_chains
-            .create_attached_swap_chain(id, &mut self.device, &mut ctx)
+            .create_attached_swap_chain(id, &mut self.device, &mut ctx, surface_access)
             .expect("Failed to create the swap chain");
 
         let swap_chain = self
@@ -682,18 +692,25 @@ impl WebGLThread {
         size: Size2D<i32>,
     ) -> Option<WebXRSwapChainId> {
         debug!("WebGLThread::create_webxr_swap_chain()");
+        let id = WebXRSwapChainId::new();
+        let surface_access = self.surface_access();
         let data = Self::make_current_if_needed_mut(
             &self.device,
             context_id,
             &mut self.contexts,
             &mut self.bound_context_id,
         )?;
-        let id = WebXRSwapChainId::new();
         self.webxr_swap_chains
-            .create_detached_swap_chain(id, size, &mut self.device, &mut data.ctx)
+            .create_detached_swap_chain(id, size, &mut self.device, &mut data.ctx, surface_access)
             .ok()?;
         debug!("Created swap chain {:?}", id);
         Some(id)
+    }
+
+    /// Which access mode to uze
+    /// TODO: is this OK on all platforms?
+    fn surface_access(&self) -> SurfaceAccess {
+        SurfaceAccess::GPUOnly
     }
 
     fn handle_dom_to_texture(&mut self, command: DOMToTextureCommand) {

@@ -14,7 +14,9 @@ use sparkle::gl::GlType;
 use std::default::Default;
 use std::rc::Rc;
 use std::sync::{Arc, Mutex};
-use surfman::{self, Context, Device, SurfaceTexture};
+use surfman::platform::generic::universal::context::Context;
+use surfman::platform::generic::universal::device::Device;
+use surfman::platform::generic::universal::surface::SurfaceTexture;
 use surfman_chains::SwapChains;
 use webrender_traits::{WebrenderExternalImageApi, WebrenderExternalImageRegistry};
 use webxr_api::SwapChainId as WebXRSwapChainId;
@@ -51,6 +53,7 @@ impl WebGLComm {
             receiver,
             webrender_swap_chains: webrender_swap_chains.clone(),
             webxr_swap_chains: webxr_swap_chains.clone(),
+            connection: device.connection(),
             adapter: device.adapter(),
             api_type,
         };

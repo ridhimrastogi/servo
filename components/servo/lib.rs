@@ -114,7 +114,7 @@ use std::cmp::max;
 use std::path::PathBuf;
 use std::rc::Rc;
 use std::sync::{Arc, Mutex};
-use surfman::Device;
+use surfman::platform::generic::universal::device::Device;
 use webrender::{RendererKind, ShaderPrecacheFlags};
 use webrender_traits::WebrenderImageHandlerType;
 use webrender_traits::{WebrenderExternalImageHandlers, WebrenderExternalImageRegistry};

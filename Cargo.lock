@@ -175,7 +175,7 @@ dependencies = [
  "lazy_static",
  "libc",
  "log",
- "mach",
+ "mach 0.2.3",
  "msg",
  "nix",
  "serde_json",
@@ -2865,6 +2865,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "mach"
+version = "0.3.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b823e83b2affd8f40a9ee8c29dbc56404c1e34cd2710921f2801e2cf29527afa"
+dependencies = [
+ "libc",
+]
+
+[[package]]
 name = "malloc_buf"
 version = "0.0.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -5113,7 +5122,7 @@ dependencies = [
 [[package]]
 name = "surfman"
 version = "0.23.0"
-source = "git+https://github.com/asajeffrey/surfman?branch=servo#00c00bf69fade9ea60f68d0eb913b1a1b0807f51"
+source = "git+https://github.com/asajeffrey/surfman?branch=servo#e40955dd0ecda831432a6d4a1b329f9d5c61b10b"
 dependencies = [
  "bitflags",
  "cgl 0.3.2",
@@ -5127,6 +5136,7 @@ dependencies = [
  "lazy_static",
  "libc",
  "log",
+ "mach 0.3.2",
  "objc",
  "osmesa-sys",
  "winapi",
@@ -5138,7 +5148,7 @@ dependencies = [
 [[package]]
 name = "surfman-chains"
 version = "0.1.0"
-source = "git+https://github.com/asajeffrey/surfman-chains#cd6428da4289a0ba9403d9ad383e13388539f3d3"
+source = "git+https://github.com/asajeffrey/surfman-chains#23e64b8477e5dc17d472447e36485f0398c8c034"
 dependencies = [
  "euclid",
  "fnv",
@@ -6027,7 +6037,7 @@ dependencies = [
 [[package]]
 name = "webxr"
 version = "0.0.1"
-source = "git+https://github.com/asajeffrey/webxr?branch=surfman#400ba1e6d6243bad6c5652a11855f4ec3116bbc6"
+source = "git+https://github.com/asajeffrey/webxr?branch=surfman#f236ea745e610197fb7c7f7041f80e5fac367944"
 dependencies = [
  "bindgen",
  "euclid",
@@ -6046,7 +6056,7 @@ dependencies = [
 [[package]]
 name = "webxr-api"
 version = "0.0.1"
-source = "git+https://github.com/asajeffrey/webxr?branch=surfman#400ba1e6d6243bad6c5652a11855f4ec3116bbc6"
+source = "git+https://github.com/asajeffrey/webxr?branch=surfman#f236ea745e610197fb7c7f7041f80e5fac367944"
 dependencies = [
  "euclid",
  "ipc-channel",
