@@ -506,6 +506,7 @@ impl WebGLThread {
         } else {
             gl.bind_vertex_array(default_vao)
         }
+        debug_assert_eq!(gl.get_error(), gl::NO_ERROR);
 
         let state = GLState {
             default_vao,
@@ -536,8 +537,6 @@ impl WebGLThread {
                 received_webgl_command: false,
             },
         );
-
-        debug_assert_eq!(data.gl.get_error(), gl::NO_ERROR);
 
         Ok((id, limits))
     }
