@@ -114,8 +114,11 @@ use std::cmp::max;
 use std::path::PathBuf;
 use std::rc::Rc;
 use std::sync::{Arc, Mutex};
+#[cfg(not(target_os = "windows"))]
 use surfman::platform::default::device::Device as HWDevice;
+#[cfg(not(target_os = "windows"))]
 use surfman::platform::generic::osmesa::device::Device as SWDevice;
+#[cfg(not(target_os = "windows"))]
 use surfman::platform::generic::universal::context::Context;
 use surfman::platform::generic::universal::device::Device;
 use webrender::{RendererKind, ShaderPrecacheFlags};
