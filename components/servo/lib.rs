@@ -114,6 +114,9 @@ use std::cmp::max;
 use std::path::PathBuf;
 use std::rc::Rc;
 use std::sync::{Arc, Mutex};
+use surfman::platform::default::device::Device as HWDevice;
+use surfman::platform::generic::osmesa::device::Device as SWDevice;
+use surfman::platform::generic::universal::context::Context;
 use surfman::platform::generic::universal::device::Device;
 use webrender::{RendererKind, ShaderPrecacheFlags};
 use webrender_traits::WebrenderImageHandlerType;
@@ -1012,11 +1015,13 @@ where
     window.make_gl_context_current();
     let (device, context) = unsafe {
         if opts::get().headless {
-            Device::from_current_software_context()
-                .expect("Failed to create software graphics context!")
+            let (device, context) = SWDevice::from_current_context()
+                .expect("Failed to create software graphics context!");
+            (Device::Software(device), Context::Software(context))
         } else {
-            Device::from_current_hardware_context()
-                .expect("Failed to create hardware graphics context!")
+            let (device, context) = HWDevice::from_current_context()
+                .expect("Failed to create hardware graphics context!");
+            (Device::Hardware(device), Context::Hardware(context))
         }
     };
 
