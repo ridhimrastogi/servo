@@ -40,3 +40,6 @@ webxr-api = { git = "https://github.com/asajeffrey/webxr", branch = "surfman" }
 
 [patch."https://github.com/servo/osmesa-src"]
 osmesa-src = { git = "https://github.com/asajeffrey/osmesa-src", branch = "servo" }
+
+[patch."https://github.com/pcwalton/surfman"]
+surfman = { git = "https://github.com/asajeffrey/surfman", branch = "servo" }
