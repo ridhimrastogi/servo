@@ -332,17 +332,6 @@ impl<'a> WebGLValidator for TexImage2DValidator<'a> {
             return Err(TexImageValidationError::TextureFormatMismatch);
         }
 
-        // OSMesa doesn't support GL_LUMINANCE in its CORE profile
-        // TODO: can we do better than just rejecting this?
-        // TODO: should we check the WebGL version? or the back end?
-        match format {
-            TexFormat::Luminance | TexFormat::LuminanceAlpha => {
-                context.webgl_error(InvalidEnum);
-                return Err(TexImageValidationError::InvalidTextureFormat);
-            },
-            _ => {},
-        }
-
         // GL_INVALID_OPERATION is generated if type is
         // GL_UNSIGNED_SHORT_4_4_4_4 or GL_UNSIGNED_SHORT_5_5_5_1 and format is
         // not GL_RGBA.
