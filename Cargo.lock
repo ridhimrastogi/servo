@@ -5113,7 +5113,7 @@ dependencies = [
 [[package]]
 name = "surfman"
 version = "0.23.0"
-source = "git+https://github.com/asajeffrey/surfman?branch=servo#8b4bb865c3832b163b37617ce696f2acd415e778"
+source = "git+https://github.com/asajeffrey/surfman?branch=servo#94a1d0fc945b1fe83a664e78b8767c9b9169e4a1"
 dependencies = [
  "bitflags",
  "cgl 0.3.2",
@@ -5130,6 +5130,7 @@ dependencies = [
  "mach",
  "objc",
  "osmesa-sys",
+ "wayland-sys 0.24.0",
  "winapi",
  "winit",
  "wio",
@@ -5823,7 +5824,7 @@ dependencies = [
  "nix",
  "wayland-commons",
  "wayland-scanner",
- "wayland-sys",
+ "wayland-sys 0.21.13",
 ]
 
 [[package]]
@@ -5833,7 +5834,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "40c08896768b667e1df195d88a62a53a2d1351a1ed96188be79c196b35bb32ec"
 dependencies = [
  "nix",
- "wayland-sys",
+ "wayland-sys 0.21.13",
 ]
 
 [[package]]
@@ -5846,7 +5847,7 @@ dependencies = [
  "wayland-client",
  "wayland-commons",
  "wayland-scanner",
- "wayland-sys",
+ "wayland-sys 0.21.13",
 ]
 
 [[package]]
@@ -5865,6 +5866,16 @@ name = "wayland-sys"
 version = "0.21.13"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "520ab0fd578017a0ee2206623ba9ef4afe5e8f23ca7b42f6acfba2f4e66b1628"
+dependencies = [
+ "dlib",
+ "lazy_static",
+]
+
+[[package]]
+name = "wayland-sys"
+version = "0.24.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "695d1a3f30f853d3b9b530df7d9ed1c32ff9b025b5d51529827a231521f2f2e4"
 dependencies = [
  "dlib",
  "lazy_static",
