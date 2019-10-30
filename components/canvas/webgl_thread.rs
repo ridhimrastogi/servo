@@ -483,6 +483,7 @@ impl WebGLThread {
         gl.clear_depth(1.);
         gl.clear_stencil(0);
         gl.clear(gl::COLOR_BUFFER_BIT | gl::DEPTH_BUFFER_BIT | gl::STENCIL_BUFFER_BIT);
+        debug_assert_eq!(gl.get_error(), gl::NO_ERROR);
 
         let descriptor = self.device.context_descriptor(&ctx);
         let has_alpha = self
@@ -493,20 +494,24 @@ impl WebGLThread {
         let texture_target = current_wr_texture_target(&self.device);
 
         let use_apple_vertex_array = WebGLImpl::needs_apple_vertex_arrays(&self.device, &ctx);
-        let default_vao = WebGLImpl::create_vertex_array(&gl, use_apple_vertex_array)
-            .expect("Failed to create VAO")
-            .get();
-        if use_apple_vertex_array {
-            match *gl {
-                Gl::Gl(ref gl) => unsafe {
-                    gl.BindVertexArrayAPPLE(default_vao);
-                },
-                Gl::Gles(_) => unimplemented!("No GLES on macOS"),
-            }
-        } else {
-            gl.bind_vertex_array(default_vao)
-        }
-        debug_assert_eq!(gl.get_error(), gl::NO_ERROR);
+        let default_vao =
+            if let Some(vao) = WebGLImpl::create_vertex_array(&gl, use_apple_vertex_array) {
+                let vao = vao.get();
+                if use_apple_vertex_array {
+                    match *gl {
+                        Gl::Gl(ref gl) => unsafe {
+                            gl.BindVertexArrayAPPLE(vao);
+                        },
+                        Gl::Gles(_) => unimplemented!("No GLES on macOS"),
+                    }
+                } else {
+                    gl.bind_vertex_array(vao)
+                }
+                debug_assert_eq!(gl.get_error(), gl::NO_ERROR);
+                vao
+            } else {
+                0
+            };
 
         let state = GLState {
             default_vao,
@@ -2047,6 +2052,8 @@ impl WebGLImpl {
             gl.gen_vertex_arrays(1)[0]
         };
         if vao == 0 {
+            let code = gl.get_error();
+            warn!("Failed to create vertex array with error code {:x}", code);
             None
         } else {
             Some(unsafe { WebGLVertexArrayId::new(vao) })
