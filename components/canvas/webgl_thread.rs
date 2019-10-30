@@ -2550,6 +2550,8 @@ impl SurfmanContextAttributeFlagsConvert for GLContextAttributes {
         flags.set(ContextAttributeFlags::ALPHA, self.alpha);
         flags.set(ContextAttributeFlags::DEPTH, self.depth);
         flags.set(ContextAttributeFlags::STENCIL, self.stencil);
+        // TODO: should we always set this to true?
+        flags.set(ContextAttributeFlags::COMPATIBILITY_PROFILE, true);
         flags
     }
 }
