@@ -450,7 +450,7 @@ impl WebGLThread {
             .get(id)
             .expect("Failed to get the swap chain");
 
-        debug!("Created webgl context {:?}/{:?}", id, ctx.id());
+        debug!("Created webgl context {:?}/{:?}", id, self.device.context_id(&ctx));
 
         let gl = match self.api_type {
             gl::GlType::Gl => Gl::gl_fns(gl::ffi_gl::Gl::load_with(|symbol_name| {

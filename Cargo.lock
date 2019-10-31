@@ -5113,7 +5113,7 @@ dependencies = [
 [[package]]
 name = "surfman"
 version = "0.23.0"
-source = "git+https://github.com/asajeffrey/surfman?branch=servo#94a1d0fc945b1fe83a664e78b8767c9b9169e4a1"
+source = "git+https://github.com/asajeffrey/surfman?branch=servo#1a333df197bb841ce44387d242be400c2bb702be"
 dependencies = [
  "bitflags",
  "cgl 0.3.2",
@@ -5140,7 +5140,7 @@ dependencies = [
 [[package]]
 name = "surfman-chains"
 version = "0.1.0"
-source = "git+https://github.com/asajeffrey/surfman-chains#23e64b8477e5dc17d472447e36485f0398c8c034"
+source = "git+https://github.com/asajeffrey/surfman-chains#13576ac0cd1573057472ba85ce520bd881e856dc"
 dependencies = [
  "euclid",
  "fnv",
