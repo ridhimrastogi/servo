@@ -694,7 +694,7 @@ class MachCommands(CommandBase):
                                 continue
                         libs = remaining_libs
                         if not libs:
-                            return
+                            return True
                     for lib in libs:
                         print("WARNING: could not find " + lib)
 
